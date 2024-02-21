@@ -3,11 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GREEN-API Demo</title>
+    <title>GREEN-API</title>
+    <style>
+        /* Add custom styling for the buttons */
+        button {
+            margin-right: 10px; /* Adjust the spacing between buttons */
+            float: right; /* Align buttons to the right */
+        }
+        /* Style the response field */
+        #responseField {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+            width: 100%;
+            height: 200px; /* Adjust the height as needed */
+            overflow-y: auto; /* Add scroll if content exceeds height */
+        }
+        /* Add styling for the inscription */
+        #inscription {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-    <h1>GREEN-API Demo Page</h1>
-    <p>Enter connection parameters:</p>
     <label for="idInstance">idInstance:</label>
     <input type="text" id="idInstance"><br>
     <label for="ApiTokenInstance">ApiTokenInstance:</label>
@@ -17,6 +39,7 @@
     <button onclick="sendMessage()">Send Message</button>
     <button onclick="sendFileByUrl()">Send File by URL</button>
     <div id="responseField"></div>
+    <div id="inscription">GREEN API © 2024</div>
 
     <script>
         function getSettings() {
