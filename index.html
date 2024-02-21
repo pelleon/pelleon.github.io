@@ -5,10 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GREEN-API</title>
     <style>
+		/* Add spacing below the input field */
+        input#apiTokenInstance {
+            margin-bottom: 30px; /* Adjust the value as needed */
+        }
+        /* Add spacing between input fields */
+        input {
+            margin-bottom: 10px; /* Adjust the value as needed */
+	    }
         /* Add custom styling for the buttons */
         button {
-            margin-right: 10px; /* Adjust the spacing between buttons */
-            float: right; /* Align buttons to the right */
+            margin-bottom: 10px; /* Add spacing between buttons */
+            display: block; /* Display buttons as blocks (one below the other) */
+        }
+		/* Add custom styling for the button getStateInstance*/
+        button#getStateInstance {
+            margin-bottom: 30px; /* Add spacing between buttons */
+        }
+		/* Add custom styling for the button sendMessage */
+        button#sendMessage {
+            margin-bottom: 30px; /* Add spacing between buttons */
         }
         /* Style the response field */
         #responseField {
@@ -16,8 +32,9 @@
             padding: 10px;
             margin-top: 20px;
             width: 100%;
-            height: 200px; /* Adjust the height as needed */
+            height: 300px; /* Adjust the height as needed */
             overflow-y: auto; /* Add scroll if content exceeds height */
+            float: right; /* Align response field to the right */
         }
         /* Add styling for the inscription */
         #inscription {
@@ -27,40 +44,150 @@
             font-size: 12px;
             color: #888;
         }
+        /* Create a two-column layout */
+        .container {
+            display: flex;
+        }
+        .column {
+            flex: 1;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
-    <label for="idInstance">idInstance:</label>
-    <input type="text" id="idInstance"><br>
-    <label for="ApiTokenInstance">ApiTokenInstance:</label>
-    <input type="text" id="ApiTokenInstance"><br>
-    <button onclick="getSettings()">Get Settings</button>
-    <button onclick="getStateInstance()">Get State Instance</button>
-    <button onclick="sendMessage()">Send Message</button>
-    <button onclick="sendFileByUrl()">Send File by URL</button>
-    <div id="responseField"></div>
+    <div class="container">
+        <div class="column">
+            <input type="text" placeholder="idInstance" id="idInstance"><br>
+            <input type="text" placeholder="apiTokenInstance" id="apiTokenInstance"><br>
+            <button id="getSettings" onclick="getSettings()">Get Settings</button>
+            <button id="getStateInstance" onclick="getStateInstance()">Get State Instance</button>
+            <input type="text" placeholder="Phone Number" id="phoneNumber"><br>
+            <input type="text" placeholder="text message" id="messageText"><br>
+            <button id="sendMessage" onclick="sendMessage()">Send Message</button>
+            <input type="text" placeholder="Phone Number" id="phoneNumber2"><br>
+            <input type="text" placeholder="URL" id="url"><br>
+            <button id="sendFileByUrl" onclick="sendFileByUrl()">Send File by URL</button>
+        </div>
+        <div class="column">
+		    <label for="responseField">Ответ:</label>
+            <div id="responseField"></div>
+        </div>
+    </div>
     <div id="inscription">GREEN API © 2024</div>
 
     <script>
         function getSettings() {
-            // Implement your logic to call the "getSettings" method here
-            // Display the response in the "responseField" div
+            const idInstance = document.getElementById('idInstance').value;
+            const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+            const apiUrl = `https://api.green-api.com/waInstance${idInstance}/getSettings/${apiTokenInstance}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response data (e.g., update UI, log data, etc.)
+                    const responseField = document.getElementById('responseField'); // Replace 'responseField' with the actual ID of your response field
+                    responseField.textContent = JSON.stringify(data, null, 2); // Display the data as a formatted JSON string
+                })
+                .catch(error => {
+                    // Handle any errors (e.g., display an error message)
+                    console.error('Error fetching account settings:', error);
+                });
         }
 
         function getStateInstance() {
-            // Implement your logic to call the "getStateInstance" method here
-            // Display the response in the "responseField" div
+            // Get values from input fields
+            const idInstance = document.getElementById('idInstance').value;
+            const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+
+            // Construct the API URL
+            const apiUrl = `https://api.green-api.com/waInstance${idInstance}/getStateInstance/${apiTokenInstance}`;
+
+            // Make an HTTP GET request
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Display the account state in the responseField
+                    const responseField = document.getElementById('responseField');
+                    responseField.textContent = `Account state: ${data.stateInstance}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
         }
 
         function sendMessage() {
-            // Implement your logic to call the "sendMessage" method here
-            // Display the response in the "responseField" div
+            // Get values from input fields
+            const idInstance = document.getElementById('idInstance').value;
+            const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const messageText = document.getElementById('messageText').value;
+
+            // Construct the request URL
+            const apiUrl = `https://api.green-api.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
+
+            // Create the request payload
+            const payload = {
+                chatId: `${phoneNumber}@c.us`,
+                message: `${messageText}`
+            };
+
+            // Send the POST request
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the response in the responseField
+                document.getElementById("responseField").innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error("Error sending message:", error);
+            });
         }
 
         function sendFileByUrl() {
-            // Implement your logic to call the "sendFileByUrl" method here
-            // Display the response in the "responseField" div
+            // Get values from input fields
+            const idInstance = document.getElementById('idInstance').value;
+            const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+            const phoneNumber = document.getElementById('phoneNumber2').value;
+            const url = document.getElementById('url').value;
+
+            // Construct the chatId (phoneNumber with "@c.us" at the end)
+            const chatId = phoneNumber + '@c.us';
+
+            // Extract the fileName from the URL (last part after the last slash)
+            const fileName = url.substring(url.lastIndexOf('/') + 1);
+
+            // Construct the request payload
+            const payload = {
+                chatId: chatId,
+                urlFile: url,
+                fileName: fileName,
+            };
+
+            // Make the POST request to the specified URL
+            fetch(`https://api.green-api.com/waInstance${idInstance}/sendFileByUrl/${apiTokenInstance}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the response in the responseField
+                document.getElementById('responseField').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error('Error sending file:', error);
+                document.getElementById('responseField').innerText = 'Error sending file. Please check console for details.';
+            });
         }
+
     </script>
 </body>
 </html>
